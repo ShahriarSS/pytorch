@@ -39,8 +39,7 @@ class _ConvNd(Module):
         self.groups = groups
         self.padding_mode = padding_mode
 
-        self._weight = weight  # Store the original weight for future reference.
-        self._packed_weight = ops.quantized.fbgemm_conv_prepack(self._weight,
+        self._packed_weight = ops.quantized.fbgemm_conv_prepack(weight,
                                                                 self.groups)
         self.bias = bias
         self.bias.requires_grad = False  # Inference only!
@@ -55,13 +54,10 @@ class _ConvNd(Module):
 
     @weight.setter
     def weight(self, w):
-        self._weight = w
-        self._packed_weight = ops.quantized.fbgemm_conv_prepack(self._weight,
-                                                                self.groups)
+        self._packed_weight = ops.quantized.fbgemm_conv_prepack(w, self.groups)
 
     @weight.deleter
     def weight(self):
-        del self._weight
         del self._packed_weight
 
     def extra_repr(self):

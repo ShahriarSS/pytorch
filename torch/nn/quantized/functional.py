@@ -16,8 +16,7 @@ def conv2d(input, weight, bias,
            stride=1, padding=0, dilation=1, groups=1,
            padding_mode='zeros',
            scale=1.0, zero_point=0,
-           dtype=torch.quint8,
-           prepacked=False):
+           dtype=torch.quint8):
     r"""
     conv2d(input, weight, bias,
            stride=1, padding=0, dilation=1, groups=1,
@@ -47,7 +46,6 @@ def conv2d(input, weight, bias,
         scale: quantization scale for the output. Default: 1.0
         zero_point: quantization zero_point for the output. Default: 0
         dtype: quantization data type to use. Default: ``torch.quint8``
-        prepacked: assume that the weights are prepacked. Default: True
 
     Examples::
 
@@ -72,8 +70,7 @@ def conv2d(input, weight, bias,
     padding = _pair(padding)
     dilation = _pair(dilation)
 
-    if not prepacked:
-        weight = ops.quantized.fbgemm_conv_prepack(weight, groups)
-    return ops.quantized.fbgemm_conv2d(input, weight, bias,
+    prepacked_weight = ops.quantized.fbgemm_conv_prepack(weight, groups)
+    return ops.quantized.fbgemm_conv2d(input, prepacked_weight, bias,
                                        stride, padding, dilation,
                                        groups, scale, zero_point)
